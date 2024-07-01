@@ -53,7 +53,9 @@ func getTasks(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-	w.Write(resp)
+	if _, err := w.Write(resp); err != nil {
+		fmt.Printf("Ошибка при записи ответа: %s", err.Error())
+	}
 }
 
 // Создать новую задачу
@@ -74,6 +76,11 @@ func postTask(w http.ResponseWriter, r *http.Request) {
 
 	if task.ID == "" || task.Description == "" {
 		http.Error(w, "Некорректные данные задачи", http.StatusBadRequest)
+		return
+	}
+
+	if _, exists := tasks[task.ID]; exists {
+		http.Error(w, "Задача с таким ID уже существует", http.StatusBadRequest)
 		return
 	}
 
@@ -101,7 +108,9 @@ func getTaskByID(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-	w.Write(resp)
+	if _, err := w.Write(resp); err != nil {
+		fmt.Printf("Ошибка при записи ответа: %s", err.Error())
+	}
 }
 
 // Удалить задачу по ID
